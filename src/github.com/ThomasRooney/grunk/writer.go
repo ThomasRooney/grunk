@@ -42,11 +42,12 @@ func (w *cmdWriter) Close() error {
 	return w.cmd.Wait()
 }
 
-// This class streams
+// This class streams to ffplay
 func getFFplayWriter() (w *cmdWriter, err error) {
 	_, err = exec.LookPath("ffplay")
 	if err != nil {
-		log.Fatalln("you need to install ffplay to run grank")
+		log.Fatalln("you need to install ffplay to run grunk
+")
 		os.Exit(1)
 	}
 

@@ -184,7 +184,8 @@ func main() {
 			was_error = !play_soundcloud(toks[1])
 		default:
 			was_error = true
-			log.Printf("id: %s, Grank can't handle streams of this form yet", toks[0])
+			log.Printf("id: %s, Grunk
+ can't handle streams of this form yet", toks[0])
 		}
 		// log.Println("waiting 1 second")
 		time.Sleep(time.Second)
