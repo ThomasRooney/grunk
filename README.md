@@ -7,6 +7,8 @@ The motivation for producing this is that running a web browser to access music 
 
 Grunk essentially manually accesses the undocumented plug.dj API backend, using an authentication cookie that can either be automatically stolen from google-chrome or provided as a 'cookie.dat' file in the same directory. It'll then use the information provided to work out the file link for the original source file, and then stream it to a ffplay instance as it downloads.
 
+Grunk should work on both OSX and Linux based systems, assuming the dependencies are provided.
+
 dependencies
 ====
 
