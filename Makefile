@@ -1,6 +1,6 @@
 build: get
-	go build github.com/ThomasRooney/grank/
+	go build github.com/ThomasRooney/grunk/
 get:
-	go get github.com/ThomasRooney/grank/
+	go get github.com/ThomasRooney/grunk/
 run:
-	./grank
+	./grunk
