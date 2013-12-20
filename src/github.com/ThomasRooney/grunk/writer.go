@@ -46,8 +46,7 @@ func (w *cmdWriter) Close() error {
 func getFFplayWriter() (w *cmdWriter, err error) {
 	_, err = exec.LookPath("ffplay")
 	if err != nil {
-		log.Fatalln("you need to install ffplay to run grunk
-")
+		log.Fatalln("you need to install ffplay to run grunk")
 		os.Exit(1)
 	}
 
