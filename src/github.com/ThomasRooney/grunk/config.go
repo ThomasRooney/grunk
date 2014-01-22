@@ -1,13 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
-	"database/sql"
 	// "path/filepath"
 	_ "github.com/mattn/go-sqlite3"
 	"regexp"
@@ -141,10 +141,14 @@ func (cfg *Config) isMp3() bool {
 	return cfg.toMp3
 }
 
-func (cfg *Config) OutputPath(stream stream) (path string) {
-	path = strings.Replace(cfg.output, "%format%", stream.Format(), -1)
-	path = strings.Replace(path, "%title%", stream["title"], -1)
-	path = strings.Replace(path, "%author%", stream["author"], -1)
+func (cfg *Config) OutputPath(stream stream, name string) (path string) {
+	if stream != nil {
+		path = strings.Replace(cfg.output, "%format%", stream.Format(), -1)
+		path = strings.Replace(path, "%title%", stream["title"], -1)
+		path = strings.Replace(path, "%author%", stream["author"], -1)
+	} else {
+		path = strings.Replace(DEFAULT_DESTINATION_MP3, "%title%", name, -1)
+	}
 	return
 }
 
@@ -208,7 +212,7 @@ func (cfg *Config) selectStream(streams streamList) (stream stream, err error) {
 	return valid_streams[0], nil
 }
 
-func cookieGrabber() (string) {
+func cookieGrabber() string {
 	// Pick up a plug.dj cookie from the same directory that we're in
 	// Format is cookie.dat
 	// exit if we fail
@@ -225,25 +229,24 @@ func cookieGrabber() (string) {
 
 	}
 	return string(content)
-}	
+}
 
 func attemptCookieSteal() (string, error) {
 	var loc string
 	switch runtime.GOOS {
-		case "darwin": 
-			loc = os.Getenv("HOME") + "/Library/Application Support/Google/Chrome/Default/Cookies" 
-		case "linux":
-			loc = os.Getenv("HOME") + "/.config/google-chrome/Default/Cookies"
-		default: 
-			log.Println("no idea what OS", runtime.GOOS, "is")
-			return "", nil
+	case "darwin":
+		loc = os.Getenv("HOME") + "/Library/Application Support/Google/Chrome/Default/Cookies"
+	case "linux":
+		loc = os.Getenv("HOME") + "/.config/google-chrome/Default/Cookies"
+	default:
+		log.Println("no idea what OS", runtime.GOOS, "is")
+		return "", nil
 	}
 	log.Println("trying location", loc)
 	result, err := cookieStealer(loc)
 	if err != nil {
 		log.Fatal("Error getting cookie.")
-	} else
-	{
+	} else {
 		log.Println("Got value", result)
 	}
 	return result, err
@@ -263,24 +266,24 @@ func cookieStealer(cookieLoc string) (string, error) {
 	`
 	rows, err := db.Query(sql)
 	if err != nil {
-			log.Fatal(err)
-			return "", err
+		log.Fatal(err)
+		return "", err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-			// log.Println(r)
-			var host_key string
-			var path string
-			var secure int
-			var expires_utc int
-			var name string
-			var value string
-			rows.Scan(&host_key, &path, &secure, &expires_utc, &name, &value)
-			log.Println("host_key:", host_key, "path:", path, "secure:", secure, "expires_utc:", expires_utc, "Name:", name, "value:", value)
-			if name == "usr" {
-				return "usr=" + value, nil
-			}
+		// log.Println(r)
+		var host_key string
+		var path string
+		var secure int
+		var expires_utc int
+		var name string
+		var value string
+		rows.Scan(&host_key, &path, &secure, &expires_utc, &name, &value)
+		log.Println("host_key:", host_key, "path:", path, "secure:", secure, "expires_utc:", expires_utc, "Name:", name, "value:", value)
+		if name == "usr" {
+			return "usr=" + value, nil
+		}
 	}
 	rows.Close()
 	return "", errors.New("USR NOT FOUND")

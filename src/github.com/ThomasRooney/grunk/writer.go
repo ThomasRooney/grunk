@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"io"
-	"time"
-
 	"log"
 	"os"
 	"os/exec"
+	"time"
 )
 
 // custom io.WriteCloser to handle on the fly mp3 convertion
@@ -17,9 +16,13 @@ const FFMPEG = "ffmpeg"
 type cmdWriter struct {
 	cmd   *exec.Cmd
 	stdin io.WriteCloser
+	aux   io.WriteCloser
 }
 
 func (w *cmdWriter) Write(p []byte) (n int, err error) {
+	if w.aux != nil {
+		w.aux.Write(p)
+	}
 	return w.stdin.Write(p)
 }
 
@@ -42,6 +45,56 @@ func (w *cmdWriter) Close() error {
 	return w.cmd.Wait()
 }
 
+// This class will write the underlying stream (video) to a file
+func getWriter(stream stream, name string) (out io.WriteCloser, err error) {
+	var audio_bitrate uint
+	path := cfg.OutputPath(stream, name)
+
+	if _, err = os.Stat(path); err == nil && cfg.overwrite == false {
+		return nil, fmt.Errorf("the destination file '%s' already exists and overwrite set to false", path)
+	}
+
+	audio_bitrate = AUDIO_BITRATE_MEDIUM
+	for auto_audio_bitrate, qualities := range audioBitrates {
+		for _, quality := range qualities {
+			if quality == stream.Quality() {
+				log.Printf("Auto-detected audio bitrate: '%dk'", auto_audio_bitrate)
+				audio_bitrate = auto_audio_bitrate
+				break
+			}
+		}
+	}
+
+	if cfg.isMp3() {
+		fmt.Printf("Converting video to mp3 file at '%s' ...\n", path)
+		out, err = getFFmpegWriter(path, audio_bitrate)
+	} else {
+		fmt.Printf("Downloading video to disk at '%s' ...\n", path)
+		out, err = os.Create(path)
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("opening destination file: %s", err)
+	}
+
+	log.Println("Destination opened at '%s'", path)
+
+	return out, nil
+}
+
+func getDoubleWriter(stream stream, name string) (w *cmdWriter, err error) {
+	writer1, err1 := getFFplayWriter()
+	if err1 == nil {
+		return nil, err1
+	}
+	writer2, err2 := getWriter(stream, name)
+	if err2 == nil {
+		return nil, err2
+	}
+	writer1.aux = writer2
+	return writer1, nil
+}
+
 // This class streams to ffplay
 func getFFplayWriter() (w *cmdWriter, err error) {
 	_, err = exec.LookPath("ffplay")
@@ -52,6 +105,7 @@ func getFFplayWriter() (w *cmdWriter, err error) {
 
 	w = &cmdWriter{
 		exec.Command("ffplay", "-nodisp", "-"),
+		nil,
 		nil,
 	}
 	w.stdin, err = w.cmd.StdinPipe()
@@ -72,6 +126,7 @@ func getFFmpegWriter(path string, audio_bitrate uint) (w *cmdWriter, err error) 
 	w = &cmdWriter{
 		exec.Command(FFMPEG, "-i", "-", "-ab", fmt.Sprintf("%dk", audio_bitrate), path),
 		nil,
+		nil,
 	}
 	w.stdin, err = w.cmd.StdinPipe()
 	if err != nil {
@@ -79,29 +134,4 @@ func getFFmpegWriter(path string, audio_bitrate uint) (w *cmdWriter, err error) 
 	}
 	w.cmd.Start()
 	return w, nil
-}
-
-// This class will write the underlying stream (video) to a file
-func getWriter(cfg *Config, stream stream) (out io.WriteCloser, err error) {
-	path := cfg.OutputPath(stream)
-
-	if _, err = os.Stat(path); err == nil && cfg.overwrite == false {
-		return nil, fmt.Errorf("the destination file '%s' already exists and overwrite set to false", path)
-	}
-
-	if cfg.isMp3() {
-		fmt.Printf("Converting video to mp3 file at '%s' ...\n", path)
-		out, err = getFFmpegWriter(path, cfg.AudioBitrate(stream))
-	} else {
-		fmt.Printf("Downloading video to disk at '%s' ...\n", path)
-		out, err = os.Create(path)
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("opening destination file: %s", err)
-	}
-
-	log.Println("Destination opened at '%s'", path)
-
-	return out, nil
 }

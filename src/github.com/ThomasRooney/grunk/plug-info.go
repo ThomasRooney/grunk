@@ -88,6 +88,10 @@ func getRoomMedia(room string, AUTH_COOKIE string) map[string]string {
 	return media
 }
 
+func getCmdWriter(s stream, filename string) (*cmdWriter, error) {
+	return getFFplayWriter()
+}
+
 func play_youtube(id string) (success bool) {
 	success = false
 	response, err := getVideoInfo(id)
@@ -98,7 +102,7 @@ func play_youtube(id string) (success bool) {
 		return
 	}
 
-	out, err := getFFplayWriter()
+	out, err := getCmdWriter(stream, "")
 	if err != nil {
 		log.Printf("ERROR: unable to create the output writer: %s\n", err)
 		return
@@ -137,11 +141,12 @@ func play_soundcloud(id string) (success bool) {
 	decoder := json.NewDecoder(reader)
 
 	decoder.Decode(&u)
-	// for k, v := range u {
-	// 	log.Println("Key: ", k, "Val: ", v)
-	// }
+	log.Println("soundcloud-details")
+	for k, v := range u {
+		log.Println("Key: ", k, "Val: ", v)
+	}
 	stream_url := u["stream_url"].(string) + "?client_id=" + SOUNDCLOUD_ID
-	out, err := getFFplayWriter()
+	out, err := getCmdWriter(nil, "")
 	if err != nil {
 		log.Printf("ERROR: unable to create the output writer: %s\n", err)
 		return

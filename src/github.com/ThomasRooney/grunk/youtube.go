@@ -87,6 +87,26 @@ func decodeVideoInfo(response string) (streams streamList, err error) {
 			log.Printf(fmt.Sprintf("An error occured while decoding one of the video's stream's information: stream %d: %s\n", stream_pos, err))
 			continue
 		}
+		if stream_qry["quality"] == nil {
+			panic(`stream_qry["quality"] == nil`)
+		}
+		if stream_qry["type"] == nil {
+			panic(`stream_qry["type"] == nil`)
+		}
+		if stream_qry["url"] == nil {
+			panic(`stream_qry["url"] == nil`)
+		}
+		if stream_qry["sig"] == nil {
+			stream_qry["sig"] = []string{""}
+			// panic(`stream_qry["sig"] == nil`)
+		}
+		if answer["title"] == nil {
+			panic(`answer["title"] == nil`)
+		}
+		if answer["author"] == nil {
+			panic(`answer["author"] == nil`)
+		}
+
 		stream := stream{
 			"quality": stream_qry["quality"][0],
 			"type":    stream_qry["type"][0],
