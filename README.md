@@ -7,6 +7,13 @@ Grunk essentially manually accesses the undocumented plug.dj API backend, using 
 
 Grunk should work on both OSX and Linux based systems, assuming the dependencies are provided.
 
+install
+=====
+	go get github.com/ThomasRooney/grunk
+	go install github.com/ThomasRooney/grunk
+
+Following the install process (if $GOPATH is setup correctly), `$GOPATH/bin` holds the grunk executable. I recommend adding `$GOPATH\bin` to `$PATH` such that musical enjoyment can begin with the command `grunk`.
+
 dependencies
 ====
 
@@ -14,7 +21,6 @@ dependencies
 	go v1.2+ to compile
 	google-chrome (optional) to grab the cookie automatically
 
-'make' should compile ./grunk, which can then be run to start the stream. The default room is 'tastycat', but this is configurable
 
 credits
 ====

@@ -1,13 +1,21 @@
 package main
 
 import (
+	"flag"
 	grunk "github.com/ThomasRooney/grunk/lib"
 	"log"
 	"strings"
 	"time"
 )
 
+var room string
+
+func init() {
+	flag.StringVar(&room, "room", "tastycat", "Set your plug.dj room to listen from")
+}
+
 func main() {
+	flag.Parse()
 	// log.SetOutput(ioutil.Discard)
 	was_error := false
 	AUTH_COOKIE := grunk.CookieGrabber()
@@ -18,7 +26,7 @@ func main() {
 			was_error = false
 			// log.Println("done")
 		}
-		media := grunk.GetRoomMedia("tastycat", AUTH_COOKIE)
+		media := grunk.GetRoomMedia(room, AUTH_COOKIE)
 		for k, v := range media {
 			log.Println("Key: ", k, "Value: ", v)
 		}
