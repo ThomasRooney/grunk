@@ -1,16 +1,13 @@
 package grunk
 
 import (
-	// curl "github.com/andelf/go-curl"
 	"compress/gzip"
 	"encoding/json"
 	"io"
-	// "io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
-	"time"
 )
 
 const SOUNDCLOUD_ID = "27b079ec70d5787cee129f9b31ba5f4f"
