@@ -22,7 +22,7 @@ func constructCookie(name string, value string) *http.Cookie {
 	return cookie
 }
 
-func getRoomMedia(room string, AUTH_COOKIE string) map[string]string {
+func GetRoomMedia(room string, AUTH_COOKIE string) map[string]string {
 	url := "http://plug.dj/_/gateway/room.details"
 	request := `{"service":"room.details","body":["` + room + `"]}`
 
@@ -89,7 +89,7 @@ func getCmdWriter(s stream, filename string) (*cmdWriter, error) {
 	return getFFplayWriter()
 }
 
-func play_youtube(id string) (success bool) {
+func PlayYoutube(id string) (success bool) {
 	success = false
 	response, err := getVideoInfo(id)
 	streams, err := decodeVideoInfo(response)
@@ -124,7 +124,7 @@ func play_youtube(id string) (success bool) {
 	return
 }
 
-func play_soundcloud(id string) (success bool) {
+func PlaySoundcloud(id string) (success bool) {
 	success = false
 
 	details_url := "http://api.soundcloud.com/tracks/" + id + ".json?client_id=" + SOUNDCLOUD_ID

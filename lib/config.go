@@ -212,7 +212,7 @@ func (cfg *Config) selectStream(streams streamList) (stream stream, err error) {
 	return valid_streams[0], nil
 }
 
-func cookieGrabber() string {
+func CookieGrabber() string {
 	// Pick up a plug.dj cookie from the same directory that we're in
 	// Format is cookie.dat
 	// exit if we fail
