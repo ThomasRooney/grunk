@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ThomasRooney/grunk"
+	grunk "github.com/ThomasRooney/grunk/lib"
 	"log"
 	"time"
 )
