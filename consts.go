@@ -1,4 +1,4 @@
-package main
+package grunk
 
 const (
 	QUALITY_HIGHRES = "highres"
