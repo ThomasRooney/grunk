@@ -97,14 +97,14 @@ func getDoubleWriter(stream stream, name string) (w *cmdWriter, err error) {
 
 // This class streams to ffplay
 func getFFplayWriter() (w *cmdWriter, err error) {
-	_, err = exec.LookPath("ffplay")
+	_, err = exec.LookPath("ffmpeg")
 	if err != nil {
-		log.Fatalln("you need to install ffplay to run grunk")
+		log.Fatalln("you need to install ffmpeg to run grunk")
 		os.Exit(1)
 	}
 
 	w = &cmdWriter{
-		exec.Command("ffplay", "-nodisp", "-"),
+		exec.Command("/bin/sh", "-c", "ffmpeg -i - -f mp3 pipe:1 | mpg123 -"),
 		nil,
 		nil,
 	}

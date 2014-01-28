@@ -3,6 +3,7 @@ package grunk
 import (
 	"compress/gzip"
 	"encoding/json"
+	"github.com/ThomasRooney/gexpect"
 	"io"
 	"log"
 	"net/http"
@@ -87,6 +88,18 @@ func GetRoomMedia(room string, AUTH_COOKIE string) map[string]string {
 
 func getCmdWriter(s stream, filename string) (*cmdWriter, error) {
 	return getFFplayWriter()
+}
+
+func PlayCmdLine(id string) (success bool) {
+	success = false
+	log.Printf("Running stream via youtube-dl and gexpect\n")
+	log.Printf("Command: \"" + "/bin/sh -c 'youtube-dl -o - " + id + " | ffmpeg -i - -f mp3 pipe:1 | mpg123 - '" + "\"")
+	child, err := gexpect.Spawn("/bin/sh -c 'youtube-dl -o - " + id + " | ffmpeg -i - -f mp3 pipe:1 | mpg123 - '")
+	if err != nil {
+		return false
+	}
+	child.Interact()
+	return
 }
 
 func PlayYoutube(id string) (success bool) {

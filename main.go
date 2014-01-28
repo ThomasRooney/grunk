@@ -32,16 +32,17 @@ func main() {
 		}
 
 		toks := strings.Split(media["id"], ":")
-		switch toks[0] {
-		case "1": // youtube
-			was_error = !grunk.PlayYoutube(toks[1])
-			log.Println("back in main")
-		case "2": // soundcloud
-			was_error = !grunk.PlaySoundcloud(toks[1])
-		default:
-			was_error = true
-			log.Printf("id: %s, Grunk can't handle streams of this form yet", toks[0])
-		}
+		was_error = !grunk.PlayCmdLine(toks[1])
+
+		// switch toks[0] {
+		// case "1": // youtube
+		// 	was_error = !grunk.PlayYoutube(toks[1])
+		// 	log.Println("back in main")
+		// case "2": // soundcloud
+		// 	was_error = !grunk.PlaySoundcloud(toks[1])
+		// default:
+		// 	// log.Printf("id: %s, Grunk can't handle streams of this form yet", toks[0])
+		// }
 		// log.Println("waiting 1 second")
 		time.Sleep(time.Second)
 		// log.Println("done")
