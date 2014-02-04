@@ -10,7 +10,6 @@ Grunk should work on both OSX and Linux based systems, assuming the dependencies
 install
 =====
 	go get github.com/ThomasRooney/grunk
-	go install github.com/ThomasRooney/grunk
 
 Following the install process (if $GOPATH is setup correctly), `$GOPATH/bin` holds the grunk executable. I recommend adding `$GOPATH\bin` to `$PATH` such that musical enjoyment can begin with the command `grunk`.
 
